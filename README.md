@@ -37,56 +37,26 @@ element the system reconstructs the exact temporal expression.
 
 Build - Run
 ====
-Folders src contain all the files needed to build and create a jar file.
+Folder src contain all the files needed to build and create a jar file.
 
 Usage
 ====
 Conversion of time expression into two integers:
-/**
- * Parameterized constructor
- * must call with expression as parameter
- * @param expr
- */
-public SISdate(String expr):
 
-/**
- * getFromTo 
- * returns integer array with lower value 
- * in position 0 and upper value in position 1
- * @return
- */
-public int[] getFromTo() ;
-	
-/**
- * returns lower field of class
- * @return
- */
-public int getFrom();
-	
-	
-/**
- * returns upper field of class
- * @return
- */
-public int getTo();
+- public SISdate(String expr) : Constructor with the time expression as parameter
 
+- public int[] getFromTo(): Returns an integer array with lower value in position 0 and upper value in position 1
+
+- public int getFrom(): Returns lower value
+
+- public int getTo(): Returns upper value
+	
+	
 Reconstruct the exact temporal expression from two integers:
-/**
- * Parameterized constructor
- * reconstructs temporal expression
- * based on from, to values 
- * lang (Greek or English)
- * @param from
- * @param to
- * @param lang
- */
-public SISdate (int from,int to,Language lang);
 
-/**
- * Return’s reconstructed temporal Expression
- * @return
- */
-public String getFullText();
+- public SISdate (int from,int to,Language lang): Reconstructs temporal expression based on from/to values and lang (Greek or English)
+
+- public String getFullText(): Return’s  a string representation of the reconstructed temporal expression
 
 
 
