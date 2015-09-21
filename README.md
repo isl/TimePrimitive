@@ -56,7 +56,7 @@ Reconstruct the exact temporal expression from two integers:
 
 - public SISdate (int from,int to,Language lang): Reconstructs temporal expression based on from/to values and lang (Greek or English)
 
-- public String getFullText(): Return’s  a string representation of the reconstructed temporal expression
+- public String getFullText(): Return’s a string representation of the reconstructed temporal expression
 
 
 
