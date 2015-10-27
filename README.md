@@ -37,7 +37,7 @@ element the system reconstructs the exact temporal expression.
 
 Build - Run
 ====
-Folder src contain all the files needed to build and create a jar file.
+Folder src contain all the files needed to build and create a jar file. This project is a Maven project, providing all the libs in pom.xml.
 
 Usage
 ====
