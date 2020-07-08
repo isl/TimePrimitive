@@ -24,9 +24,10 @@ http://www.ics.forth.gr/isl
 Author: Giannis Agathangelos
 
 This file is part of the TimePrimitive project.
-*/
+ */
 /**
  * Wrapper class for the time_primitive parser
+ *
  * @author jagathan
  */
 package timeprimitve;
@@ -38,138 +39,182 @@ import core.Parser;
 import core.TimeFlags.TM_LANGUAGE;
 
 public class SISdate {
-	
-	public static enum Language{
-		ENGLISH,GREEK
-	}
 
-	private int from;
-	
-	private int to;
-	
-	private String str;
-	
-	private String error;
-	
-	/**
-	 * Default constructor
-	 */
-	public SISdate(){
-		this.str = null;
-		this.error = null;
-	}
-	
-	/**
-	 * Parameterized constructor
-	 * @param expr
-	 */
-	public SISdate(String expr){		
-		str = expr;
-		if(timeParse(expr) == 0)
-			this.str = getTimeErrorMessage();
-	}
+    public static enum Language {
+        ENGLISH, GREEK
+    }
 
-	/**
-	 * Parameterized constructor
-	 * @param lower
-	 * @param upper
-	 */
-	public SISdate(int lower,int upper,Language lang){
-		if(lang == Language.ENGLISH)
-			present(lower,upper,0);
-		else if( lang == Language.GREEK)
-			present(lower,upper,1);
-	}
-	
-	/**
-	 * getFromTo
-	 * @return
-	 */
-	public int[] getFromTo() {
+    private int from;
+
+    private int to;
+
+    private String str;
+
+    private String error;
+
+    /**
+     * Default constructor
+     */
+    public SISdate() {
+        this.str = null;
+        this.error = null;
+    }
+
+    /**
+     * Parameterized constructor
+     *
+     * @param expr
+     */
+    public SISdate(String expr) {
+
+        String newExpr = "";
+        if (expr.toLowerCase().contains("ca.")) {
+            String exprParts[] = expr.split(" ");
+            if (exprParts.length == 2) {
+                newExpr = exprParts[1] + " , ca.";
+            } else {
+                newExpr = expr;
+            }
+
+        } else {
+
+            String exprParts[] = expr.split(" ");
+
+            for (String part : exprParts) {
+                if (part.toLowerCase().equals("1st") || part.toLowerCase().equals("2nd") || part.toLowerCase().equals("3rd")) {
+                    newExpr += (part + " ");
+                } else {
+                    if (Character.isDigit(part.charAt(0)) && part.endsWith("st")) {
+                        String newpart = part.replace("st", "th");
+                        newExpr += (newpart + " ");
+                    } else if (Character.isDigit(part.charAt(0)) && part.endsWith("nd")) {
+                        String newpart = part.replace("nd", "th");
+                        newExpr += (newpart + " ");
+                    } else if (Character.isDigit(part.charAt(0)) && part.endsWith("rd")) {
+                        String newpart = part.replace("rd", "th");
+                        newExpr += (newpart + " ");
+                    } else {
+                        newExpr += (part + " ");
+                    }
+                }
+            }
+            newExpr = newExpr.trim();
+        }
+
+        str = newExpr;
+        if (timeParse(str) == 0) {
+            this.str = getTimeErrorMessage();
+        }
+    }
+
+    /**
+     * Parameterized constructor
+     *
+     * @param lower
+     * @param upper
+     */
+    public SISdate(int lower, int upper, Language lang) {
+        if (lang == Language.ENGLISH) {
+            present(lower, upper, 0);
+        } else if (lang == Language.GREEK) {
+            present(lower, upper, 1);
+        }
+    }
+
+    /**
+     * getFromTo
+     *
+     * @return
+     */
+    public int[] getFromTo() {
         int[] i = new int[2];
         i[0] = this.from;
         i[1] = this.to;
         return i;
     }
-	
-	/**
-	 * returns lower field of class
-	 * @return
-	 */
-	public int getFrom(){
-		return this.from;
-	}
-	
-	/**
-	 * returns upper field of class
-	 * @return
-	 */
-	public int getTo(){
-		return this.to;
-	}
-	
-	/**
-	 * returns presentedValue field
-	 * @return
-	 */
-	public String getFullText(){
-		return this.str;
-	}
-	
-	/**
-	 * returns error field
-	 * @return
-	 */
-	private String getTimeErrorMessage(){
-		return this.error;
-	}
-	
-	/**
-	 * timeParse 
-	 * parses the expression and stores
-	 * the lower and upper value in
-	 * classes fields lower and upper respectively
-	 * @param exrp
-	 * @return
-	 */
-	private int timeParse(String exrp){
-		
-		int[] result = new int[2];
-		Parser parser = new Parser();
-		
-		result = null;
-		try {
-			result = parser.timeParse(exrp);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		if(result == null){
-			this.error = parser.getTimeErrorMessage();
-			return 0;
-		}
-		
-		this.from = result[0];
-		this.to = result[1];
-		
-		return 1;
-	}
-	
-	/**
-	 * Reconstructs the expression
-	 * based on lower an upper values
-	 * and stores it in the presentedValue field 
-	 * @param lower
-	 * @param upper
-	 * @param lang
-	 */
-	private void present(int lower, int upper,int lang){
-		
-		Time time = new Time(lower,upper);
-	
-		if(lang == 0)
-			this.str = time.present(TM_LANGUAGE.TM_ENGLISH);
-		else if(lang == 1)
-			this.str = time.present(TM_LANGUAGE.TM_GREEK);
-	}
+
+    /**
+     * returns lower field of class
+     *
+     * @return
+     */
+    public int getFrom() {
+        return this.from;
+    }
+
+    /**
+     * returns upper field of class
+     *
+     * @return
+     */
+    public int getTo() {
+        return this.to;
+    }
+
+    /**
+     * returns presentedValue field
+     *
+     * @return
+     */
+    public String getFullText() {
+        return this.str;
+    }
+
+    /**
+     * returns error field
+     *
+     * @return
+     */
+    private String getTimeErrorMessage() {
+        return this.error;
+    }
+
+    /**
+     * timeParse parses the expression and stores the lower and upper value in
+     * classes fields lower and upper respectively
+     *
+     * @param exrp
+     * @return
+     */
+    private int timeParse(String exrp) {
+
+        int[] result = new int[2];
+        Parser parser = new Parser();
+
+        result = null;
+        try {
+            result = parser.timeParse(exrp);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (result == null) {
+            this.error = parser.getTimeErrorMessage();
+            return 0;
+        }
+
+        this.from = result[0];
+        this.to = result[1];
+
+        return 1;
+    }
+
+    /**
+     * Reconstructs the expression based on lower an upper values and stores it
+     * in the presentedValue field
+     *
+     * @param lower
+     * @param upper
+     * @param lang
+     */
+    private void present(int lower, int upper, int lang) {
+
+        Time time = new Time(lower, upper);
+
+        if (lang == 0) {
+            this.str = time.present(TM_LANGUAGE.TM_ENGLISH);
+        } else if (lang == 1) {
+            this.str = time.present(TM_LANGUAGE.TM_GREEK);
+        }
+    }
 }
