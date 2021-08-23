@@ -55,6 +55,7 @@ package core;
 	import time.Time;
 	import year.SingleYear;
 	import error.Error;
+        import java.nio.charset.StandardCharsets;
 
 //#line 26 "Parser.java"
 
@@ -600,17 +601,16 @@ final static String yyrule[] = {
 		String filename = tempFile.getPath();
 
 		parsedTimeVal[0].set_upper_lower(0, 0);  //initialize lower and upper values
-
 		
 		//write parseStr to file
 		Writer writer = new BufferedWriter(new OutputStreamWriter(
-              new FileOutputStream(filename), "utf-8"));
+                new FileOutputStream(filename), StandardCharsets.UTF_8));
 
 		writer.write(parseStr);
 		writer.close();
 
 		//Parse the file 
-		yyparser = new Parser(new FileReader(filename));
+		yyparser = new Parser(new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8));
 		yyparser.yyparse();
 
 		tempFile.delete();	//delete temp file
