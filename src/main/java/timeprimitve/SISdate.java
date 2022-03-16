@@ -37,6 +37,10 @@ import java.io.IOException;
 import time.Time;
 import core.Parser;
 import core.TimeFlags.TM_LANGUAGE;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class SISdate {
 
@@ -66,6 +70,12 @@ public class SISdate {
      * @param expr
      */
     public SISdate(String expr) {
+
+        // Patch for YYYY/MM/DD and DD/MM/YYYY values
+        Calendar dateExpr = getValidDate(expr);
+        if (dateExpr != null) {
+            expr = dateExpr.get(Calendar.YEAR) + " " + dateExpr.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH) + " " + dateExpr.get(Calendar.DAY_OF_MONTH);
+        }
 
         String newExpr = "";
         if (expr.toLowerCase().contains("ca.")) {
@@ -215,6 +225,24 @@ public class SISdate {
             this.str = time.present(TM_LANGUAGE.TM_ENGLISH);
         } else if (lang == 1) {
             this.str = time.present(TM_LANGUAGE.TM_GREEK);
+        }
+    }
+
+    /**
+     * Check if a String has a valid date value
+     *
+     * @param inDate The String date
+     * @return true if the date is valid, false otherwise
+     */
+    public static Calendar getValidDate(String inDate) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("[yyyy/MM/dd][yyyy/MM][yyyy][dd/MM/yyyy]");
+        try {
+            LocalDate localDate = LocalDate.parse(inDate.trim(), dateFormatter);
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(localDate.getYear(), localDate.getMonthValue()-1, localDate.getDayOfMonth());
+            return calendar;
+        } catch (Exception ex) {
+            return null;
         }
     }
 }
