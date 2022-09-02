@@ -76,6 +76,9 @@ public class SISdate {
         if (dateExpr != null) {
             expr = dateExpr.get(Calendar.YEAR) + " " + dateExpr.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH) + " " + dateExpr.get(Calendar.DAY_OF_MONTH);
         }
+        
+        // Patch for values containing "-" without surounding space(s)
+        expr = expr.replace("-", " - ").replaceAll(" +", " ");
 
         String newExpr = "";
         if (expr.toLowerCase().contains("ca.")) {
