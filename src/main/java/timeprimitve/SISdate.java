@@ -38,6 +38,7 @@ import time.Time;
 import core.Parser;
 import core.TimeFlags.TM_LANGUAGE;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Locale;
@@ -56,6 +57,8 @@ public class SISdate {
 
     private String error;
 
+    private String dateType;
+
     /**
      * Default constructor
      */
@@ -71,12 +74,21 @@ public class SISdate {
      */
     public SISdate(String expr) {
 
-        // Patch for YYYY/MM/DD and DD/MM/YYYY values
+        // Patch for YYYY/MM/DD, DD/MM/YYYY, YYYY/MM and MM/YYYY values
         Calendar dateExpr = getValidDate(expr);
         if (dateExpr != null) {
-            expr = dateExpr.get(Calendar.YEAR) + " " + dateExpr.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH) + " " + dateExpr.get(Calendar.DAY_OF_MONTH);
+            if (dateType.equals("date")) {
+                
+                // Date value
+                expr = dateExpr.get(Calendar.YEAR) + " " + dateExpr.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH) + " " + dateExpr.get(Calendar.DAY_OF_MONTH);
+                
+            } else if (dateType.equals("yearMonth")) {
+                
+                // Year-Month value
+                expr = dateExpr.get(Calendar.YEAR) + " " + dateExpr.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH);
+            }
         }
-        
+
         // Patch for values containing "-" without surounding space(s)
         expr = expr.replace("-", " - ").replaceAll(" +", " ");
 
@@ -232,20 +244,28 @@ public class SISdate {
     }
 
     /**
-     * Check if a String has a valid date value
+     * Check if a String has a valid Date value
      *
      * @param inDate The String date
      * @return true if the date is valid, false otherwise
      */
-    public static Calendar getValidDate(String inDate) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("[yyyy/MM/dd][yyyy/MM][yyyy][dd/MM/yyyy]");
+    public Calendar getValidDate(String inDate) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("[yyyy/MM/dd][dd/MM/yyyy][yyyy/MM][MM/yyyy][yyyy]");
+        Calendar calendar = Calendar.getInstance();
         try {
             LocalDate localDate = LocalDate.parse(inDate.trim(), dateFormatter);
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(localDate.getYear(), localDate.getMonthValue()-1, localDate.getDayOfMonth());
+            calendar.set(localDate.getYear(), localDate.getMonthValue() - 1, localDate.getDayOfMonth());
+            dateType = "date";
             return calendar;
         } catch (Exception ex) {
-            return null;
+            try {
+                YearMonth yearMonth = YearMonth.parse(inDate.trim(), dateFormatter);
+                calendar.set(yearMonth.getYear(), yearMonth.getMonthValue() - 1, 1);
+                dateType = "yearMonth";
+                return calendar;
+            } catch (Exception ex2) {
+                return null;
+            }
         }
     }
 }
